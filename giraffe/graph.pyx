@@ -97,7 +97,7 @@ cdef class Graph(object):
             return {(k, v) for k in self._adj for v in self._adj[k]}
 
     def add_vertex(self, v):
-        self._adj.setdefault(v, {})
+        self._adj.setdefault(v, set())
 
     def add_vertices(self, vs):
         for v in vs:
@@ -106,7 +106,7 @@ cdef class Graph(object):
     def add_edge(self, u, v):
         # if necessary we can sorted(key=id) to know where to put the edge
         self.add_vertices((u, v))
-        self._adj.setdefault(u, {})[v] = {}
+        self._adj[u].add(v)
 
     def add_edges(self, es):
         for u, v in es:
@@ -122,6 +122,25 @@ cdef class Graph(object):
     def has_edge(self, u, v):
         u_adj, v_adj = self._adj.get(u, {}), self._adj.get(v, {})
         return v in u_adj or u in v_adj
+
+    def remove_vertex(self, v):
+        if not self.has_vertex(v):
+            raise NoSuchVertex(v)
+
+        del self._adj[v]
+
+        for u, e in self._adj.iteritems():
+            if v in e:
+                e.remove(v)
+
+    def remove_vertices(self, vs):
+        missing = [v for v in vs if not self.has_vertex(v)]
+
+        if missing:
+            raise NoSuchVertex(missing)
+
+        for v in vs:
+            self.remove_vertex(v)
 
     # 2.x's viewkeys objects lack .union / .intersection methods... :/
     def union(self, *others):

@@ -154,6 +154,42 @@ class TestGraph(unittest.TestCase):
             self.assertTrue(g.has_edge(u, v))
             self.assertTrue(g.has_edge(v, u))
 
+    def test_remove_vertex(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        g.remove_vertex(5)
+        self.assertEqual(g.order, 5)
+        self.assertEqual(g.edges, e)
+
+        g.remove_vertex(1)
+        self.assertEqual(g.order, 4)
+        self.assertEqual(g.edges, {(2, 3), (3, 4)})
+
+    def test_remove_vertices(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        g.remove_vertices((2, 3))
+        self.assertEqual(g.edges, {(0, 1), (1, 4)})
+
+    def test_remove_vertex_nonexistent(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        self.assertRaises(c.NoSuchVertex, g.remove_vertex, 10)
+        self.assertRaises(c.NoSuchVertex, g.remove_vertices, (8, 10))
+
+    def test_remove_vertex_atomic(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        with self.assertRaises(c.NoSuchVertex):
+            g.remove_vertices((2, 10))
+
+        self.assertIn(2, g.vertices)
+        self.assertEqual(g.edges, e)
+
     def test_edges(self):
         e = {(1, 5), (2, 5), (3, 4)}
         g = c.Graph(range(1, 6), e)
