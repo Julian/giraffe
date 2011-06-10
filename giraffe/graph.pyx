@@ -1,19 +1,10 @@
 from giraffe import GiraffeException
 
-def _no_such_vertex(cls, v):
-    e = cls("There is no vertex '%s' in the graph." % v)
-    e.errno = e.ERRNO["vertex"]
-    return e
+class NoSuchVertex(GiraffeException):
+    pass
 
-def _no_such_edge(cls, u, v):
-    e = cls("There is no edge '%s' in the graph." % ((u, v),))
-    e.errno = e.ERRNO["edge"]
-    return e
-
-class NotInGraph(GiraffeException):
-    ERRNO = {"vertex" : 0, "edge" : 1}
-    vertex = classmethod(_no_such_vertex)
-    edge = classmethod(_no_such_edge)
+class NoSuchEdge(GiraffeException):
+    pass
 
 def _from_adjacency_map(cls, adj=None, **kwadj):
     if adj is None:
@@ -28,6 +19,7 @@ def _from_adjacency_map(cls, adj=None, **kwadj):
     return g
 
 def _from_graph(cls, g):
+    # TODO: this is gonna be broken as-is if we go from undirected to directed
     return cls(vertices=g.vertices, edges=g.edges)
 
 cdef class Graph(object):
@@ -52,13 +44,13 @@ cdef class Graph(object):
         try:
             return self._adj[v]
         except KeyError:
-            raise NotInGraph.vertex(v)
+            raise NoSuchVertex(v)
 
     def __delitem__(self, v):
         try:
             del self._adj[v]
         except KeyError:
-            raise NotInGraph.vertex(v)
+            raise NoSuchVertex(v)
 
     def __iter__(self):
         return iter(self._adj)
@@ -160,7 +152,7 @@ cdef class Graph(object):
     def remove_vertices(self, vs):
         for v in vs:
             if v not in self:
-                raise NotInGraph.vertex(v)
+                raise NoSuchVertex(v)
 
         for v in vs:
             self.remove_vertex(v)
@@ -169,12 +161,12 @@ cdef class Graph(object):
         try:
             self[u].remove(v)
         except KeyError:
-            raise NotInGraph.edge(u, v)
+            raise NoSuchEdge((u, v))
 
     def remove_edges(self, es):
         for u, v in es:
             if not self.has_edge(u, v):
-                raise NotInGraph.edge(u, v)
+                raise NoSuchEdge((u, v))
 
         for u, v in es:
             self.remove_edge(u, v)

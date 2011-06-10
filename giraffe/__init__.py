@@ -1,2 +1,2 @@
 from giraffe.core import GiraffeException
-from giraffe.graph import NotInGraph, Graph
+from giraffe.graph import NoSuchVertex, NoSuchEdge, Graph
