@@ -1,7 +1,19 @@
 from giraffe import GiraffeException
 
-class NoSuchVertex(GiraffeException):
-    pass
+def _no_such_vertex(cls, v):
+    e = cls("There is no vertex '%s' in the graph." % v)
+    e.errno = e.ERRNO["vertex"]
+    return e
+
+def _no_such_edge(cls, u, v):
+    e = cls("There is no edge '%s' in the graph." % ((u, v),))
+    e.errno = e.ERRNO["edge"]
+    return e
+
+class NotInGraph(GiraffeException):
+    ERRNO = {"vertex" : 0, "edge" : 1}
+    vertex = classmethod(_no_such_vertex)
+    edge = classmethod(_no_such_edge)
 
 def _from_adjacency_map(cls, adj=None, **kwadj):
     if adj is None:
@@ -40,7 +52,13 @@ cdef class Graph(object):
         try:
             return self._adj[v]
         except KeyError:
-            raise NoSuchVertex(v)
+            raise NotInGraph.vertex(v)
+
+    def __delitem__(self, v):
+        try:
+            del self._adj[v]
+        except KeyError:
+            raise NotInGraph.vertex(v)
 
     def __richcmp__(self, other, int op):
         s, o = self.vertices, other.vertices
@@ -124,23 +142,33 @@ cdef class Graph(object):
         return v in u_adj or u in v_adj
 
     def remove_vertex(self, v):
-        if not self.has_vertex(v):
-            raise NoSuchVertex(v)
-
-        del self._adj[v]
+        del self[v]
 
         for u, e in self._adj.iteritems():
             if v in e:
                 e.remove(v)
 
     def remove_vertices(self, vs):
-        missing = [v for v in vs if not self.has_vertex(v)]
-
-        if missing:
-            raise NoSuchVertex(missing)
+        for v in vs:
+            if v not in self:
+                raise NotInGraph.vertex(v)
 
         for v in vs:
             self.remove_vertex(v)
+
+    def remove_edge(self, u, v):
+        try:
+            self[u].remove(v)
+        except KeyError:
+            raise NotInGraph.edge(u, v)
+
+    def remove_edges(self, es):
+        for u, v in es:
+            if not self.has_edge(u, v):
+                raise NotInGraph.edge(u, v)
+
+        for u, v in es:
+            self.remove_edge(u, v)
 
     # 2.x's viewkeys objects lack .union / .intersection methods... :/
     def union(self, *others):
