@@ -27,6 +27,7 @@ def _from_graph(cls, g):
 cdef class Graph(object):
 
     cdef object _adj
+    cdef int _size
 
     cdef public str name
 
@@ -34,6 +35,8 @@ cdef class Graph(object):
         super(Graph, self).__init__()
 
         self._adj = {}
+        self._size = 0
+
         self.name = name
 
         self.add_vertices(vertices)
@@ -74,7 +77,7 @@ cdef class Graph(object):
             return s >= o and self.edges >= other.edges
 
     def __len__(self):
-        return len(self._adj)
+        return self.order
 
     def __and__(self, other):
         return self.intersection(other)
@@ -94,12 +97,12 @@ cdef class Graph(object):
     property order:
 
         def __get__(self):
-            return len(self)
+            return len(self._adj)
 
     property size:
 
         def __get__(self):
-            return len(self.edges)
+            return self._size
 
     property vertices:
 
@@ -121,6 +124,10 @@ cdef class Graph(object):
     def add_edge(self, u, v):
         # if necessary we can sorted(key=id) to know where to put the edge
         self.add_vertices((u, v))
+
+        if not self.has_edge(u, v):
+            self._size += 1
+
         self._adj[u].add(v)
 
     def add_edges(self, es):
@@ -167,6 +174,8 @@ cdef class Graph(object):
             self[u].remove(v)
         except KeyError:
             raise NoSuchEdge((u, v))
+        else:
+            self._size -= 1
 
     def remove_edges(self, es):
         for u, v in es:
