@@ -144,6 +144,9 @@ cdef class Graph(object):
         u_adj, v_adj = self._adj.get(u, {}), self._adj.get(v, {})
         return v in u_adj or u in v_adj
 
+    def degree(self, v):
+        return len(self.neighbors(v))
+
     def neighbors(self, v):
         return self[v] | {u for u in self if v in self[u]}
 

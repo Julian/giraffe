@@ -158,6 +158,13 @@ class TestGraph(unittest.TestCase):
             self.assertTrue(g.has_edge(u, v))
             self.assertTrue(g.has_edge(v, u))
 
+    def test_degree(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        for i, v in enumerate((1, 3, 2, 2, 2, 0)):
+            self.assertEqual(g.degree(i), v)
+
     def test_neighbors(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
