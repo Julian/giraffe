@@ -8,5 +8,8 @@ setup(
       package_dir={"giraffe" : ""},
       packages=["giraffe"],
       cmdclass = {'build_ext': build_ext},
-      ext_modules = [Extension("graph", ["giraffe/graph.pyx"])]
+      ext_modules = [
+                     Extension("graph", ["giraffe/graph.pyx"]),
+                     Extension("graph_mixin", ["giraffe/graph_mixin.pyx"]),
+                    ]
 )

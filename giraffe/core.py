@@ -1,2 +1,0 @@
-class GiraffeException(Exception):
-    pass

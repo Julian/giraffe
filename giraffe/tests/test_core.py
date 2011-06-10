@@ -1,6 +1,7 @@
 import unittest
 
 import giraffe as c
+import giraffe.exceptions as exc
 
 class TestGraph(unittest.TestCase):
     def test_eq_ne(self):
@@ -77,7 +78,7 @@ class TestGraph(unittest.TestCase):
 
     def test_no_such_vertex(self):
         g = c.Graph()
-        self.assertRaises(c.NoSuchVertex, g.__getitem__, 0)
+        self.assertRaises(exc.NoSuchVertex, g.__getitem__, 0)
 
     def test_add_vertex(self):
         g = c.Graph()
@@ -201,14 +202,14 @@ class TestGraph(unittest.TestCase):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
 
-        self.assertRaises(c.NoSuchVertex, g.remove_vertex, 10)
-        self.assertRaises(c.NoSuchVertex, g.remove_vertices, (8, 10))
+        self.assertRaises(exc.NoSuchVertex, g.remove_vertex, 10)
+        self.assertRaises(exc.NoSuchVertex, g.remove_vertices, (8, 10))
 
     def test_remove_vertex_atomic(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
 
-        with self.assertRaises(c.NoSuchVertex):
+        with self.assertRaises(exc.NoSuchVertex):
             g.remove_vertices((2, 10))
 
         self.assertIn(2, g.vertices)
@@ -233,14 +234,14 @@ class TestGraph(unittest.TestCase):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
 
-        self.assertRaises(c.NoSuchEdge, g.remove_edge, 1, 5)
-        self.assertRaises(c.NoSuchEdge, g.remove_edges, [(0, 1), (1, 3)])
+        self.assertRaises(exc.NoSuchEdge, g.remove_edge, 1, 5)
+        self.assertRaises(exc.NoSuchEdge, g.remove_edges, [(0, 1), (1, 3)])
 
     def test_remove_edge_atomic(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
 
-        with self.assertRaises(c.NoSuchEdge):
+        with self.assertRaises(exc.NoSuchEdge):
             g.remove_edges([(0, 1), (2, 10)])
 
         self.assertEqual(g.edges, e)
