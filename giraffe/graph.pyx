@@ -60,6 +60,9 @@ cdef class Graph(object):
         except KeyError:
             raise NotInGraph.vertex(v)
 
+    def __iter__(self):
+        return iter(self._adj)
+
     def __richcmp__(self, other, int op):
         s, o = self.vertices, other.vertices
 
@@ -140,6 +143,9 @@ cdef class Graph(object):
     def has_edge(self, u, v):
         u_adj, v_adj = self._adj.get(u, {}), self._adj.get(v, {})
         return v in u_adj or u in v_adj
+
+    def neighbors(self, v):
+        return self[v] | {u for u in self if v in self[u]}
 
     def remove_vertex(self, v):
         del self[v]

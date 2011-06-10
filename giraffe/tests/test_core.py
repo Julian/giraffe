@@ -45,6 +45,11 @@ class TestGraph(unittest.TestCase):
         g = c.Graph(edges=[(0, o)])
         self.assertIn(o, g[0])
 
+    def test_iter(self):
+        v = {object() for _ in range(5)}
+        g = c.Graph(v)
+        self.assertEqual(set(iter(g)), v)
+
     def test_str(self):
         g = c.Graph()
         g.name = "Test"
@@ -145,14 +150,19 @@ class TestGraph(unittest.TestCase):
 
     def test_add_edges_nonexisting_vertices(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
-        g = c.Graph()
-        g.add_edges(e)
+        g = c.Graph(edges=e)
 
         self.assertEqual(g.vertices, set(range(5)))
 
         for u, v in e:
             self.assertTrue(g.has_edge(u, v))
             self.assertTrue(g.has_edge(v, u))
+
+    def test_neighbors(self):
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
+        g = c.Graph(range(6), e)
+
+        self.assertEqual(g.neighbors(1), {0, 2, 4})
 
     def test_remove_vertex(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
