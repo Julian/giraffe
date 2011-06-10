@@ -158,6 +158,13 @@ class TestGraph(unittest.TestCase):
             self.assertTrue(g.has_edge(u, v))
             self.assertTrue(g.has_edge(v, u))
 
+    def test_add_path(self):
+        g = c.Graph(range(6), {(1, 4)})
+
+        e = {(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (1, 4)}
+        g.add_path(range(6))
+        self.assertEqual(g.edges, e)
+
     def test_degree(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)

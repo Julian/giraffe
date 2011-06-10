@@ -1,3 +1,5 @@
+from itertools import izip
+
 from giraffe import GiraffeException
 
 class NoSuchVertex(GiraffeException):
@@ -124,6 +126,9 @@ cdef class Graph(object):
     def add_edges(self, es):
         for u, v in es:
             self.add_edge(u, v)
+
+    def add_path(self, vs):
+        self.add_edges(izip(vs, vs[1:]))
 
     def copy(self):
         return self.__class__.from_graph(self)
