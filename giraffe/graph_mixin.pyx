@@ -68,6 +68,7 @@ cdef class GraphMixin(object):
     def __len__(self):
         return self.order
 
+    # TODO: see Cython docs
     def __and__(self, other):
         return self.intersection(other)
 
@@ -119,9 +120,6 @@ cdef class GraphMixin(object):
 
     def copy(self):
         return self.__class__.from_graph(self)
-
-    def degree(self, v):
-        return len(self[v])
 
     def has_vertex(self, v):
         # allowing non-hashable to propagate for now
