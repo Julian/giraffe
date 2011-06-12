@@ -9,6 +9,7 @@ cdef class Graph(GraphMixin):
             seen = set()
             edges = set()
 
+            # TODO: iter_neighbors
             for u, neighbors in self._adj.iteritems():
                 seen.add(u)
 

@@ -303,3 +303,13 @@ class TestGraph(unittest.TestCase):
 
         self.assertEqual(i.vertices, {1, 2, 4})
         self.assertEqual(i.edges, {(1, 4), (2, 4)})
+
+    def test_adjacency_map(self):
+        v, e = set(range(1, 4)), {(1, 3), (1, 4), (2, 4), (2, 3)}
+        g = c.Graph(v, e)
+
+        m = g.adjacency_map
+        self.assertEqual(m, {1 : {3, 4}, 2 : {3, 4}, 3 : {1, 2}, 4 : {1, 2}})
+
+        m[1].add(2)
+        self.assertFalse(g.has_edge(1, 2), "Adjacency map mutated the graph.")

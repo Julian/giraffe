@@ -96,7 +96,7 @@ cdef class GraphMixin(object):
     property adjacency_map:
 
         def __get__(self):
-            pass
+            return {k : set(self[k]) for k in self}
 
     property vertices:
 
