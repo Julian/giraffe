@@ -93,15 +93,15 @@ cdef class GraphMixin(object):
         def __get__(self):
             return self._size
 
+    property adjacency_map:
+
+        def __get__(self):
+            pass
+
     property vertices:
 
         def __get__(self):
             return self._adj.viewkeys()
-
-    property edges:
-
-        def __get__(self):
-            return {(k, v) for k in self._adj for v in self._adj[k]}
 
     def add_vertex(self, v):
         self._adj.setdefault(v, set())

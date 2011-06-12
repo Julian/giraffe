@@ -2,32 +2,47 @@ from giraffe.exceptions import NoSuchEdge
 from giraffe.graph_mixin cimport GraphMixin
 
 cdef class Graph(GraphMixin):
+    property edges:
+
+        def __get__(self):
+            # this is lazy, there's a better way to do this
+            seen = set()
+            edges = set()
+
+            for u, neighbors in self._adj.iteritems():
+                seen.add(u)
+
+                for v in neighbors:
+                    if v not in seen:
+                        edges.add((u, v))
+
+            return edges
+
     def add_edge(self, u, v):
-        # if necessary we can sorted(key=id) to know where to put the edge
         self.add_vertices((u, v))
 
         if not self.has_edge(u, v):
             self._size += 1
 
         self._adj[u].add(v)
+        self._adj[v].add(u)
 
     def has_edge(self, u, v):
-        u_adj, v_adj = self._adj.get(u, {}), self._adj.get(v, {})
-        return v in u_adj or u in v_adj
+        return v in self[u]
 
     def neighbors(self, v):
-        return self[v] | {u for u in self if v in self[u]}
+        return self[v]
 
     def remove_vertex(self, v):
-        del self[v]
+        for u in self[v]:
+            self[u].remove(v)
 
-        for u, e in self._adj.iteritems():
-            if v in e:
-                e.remove(v)
+        del self[v]
 
     def remove_edge(self, u, v):
         try:
             self[u].remove(v)
+            self[v].remove(u)
         except KeyError:
             raise NoSuchEdge((u, v))
         else:
