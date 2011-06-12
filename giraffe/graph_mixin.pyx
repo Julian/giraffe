@@ -121,11 +121,19 @@ cdef class GraphMixin(object):
         return self.__class__.from_graph(self)
 
     def degree(self, v):
-        return len(self.neighbors(v))
+        return len(self[v])
 
     def has_vertex(self, v):
         # allowing non-hashable to propagate for now
         return v in self._adj
+
+    def has_edge(self, u, v):
+        return v in self[u]
+
+    def neighbors(self, vs=()):
+        if not vs:
+            return self._adj
+        return {k : self[k] for k in vs}
 
     def remove_vertices(self, vs):
         for v in vs:

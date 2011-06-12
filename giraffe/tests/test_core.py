@@ -177,7 +177,10 @@ class TestGraph(unittest.TestCase):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}
         g = c.Graph(range(6), e)
 
-        self.assertEqual(g.neighbors(1), {0, 2, 4})
+        self.assertEqual(g.neighbors([1]), {1 : {0, 2, 4}})
+        self.assertEqual(g.neighbors([1])[1], g[1])
+
+        self.assertEqual(g.neighbors([2, 4]), {2 : {1, 3}, 4 : {1, 3}})
 
     def test_remove_vertex(self):
         e = {(0, 1), (1, 2), (2, 3), (3, 4), (1, 4)}

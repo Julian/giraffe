@@ -27,12 +27,6 @@ cdef class Graph(GraphMixin):
         self._adj[u].add(v)
         self._adj[v].add(u)
 
-    def has_edge(self, u, v):
-        return v in self[u]
-
-    def neighbors(self, v):
-        return self[v]
-
     def remove_vertex(self, v):
         for u in self[v]:
             self[u].remove(v)
